@@ -1,0 +1,30 @@
+@model DynamicConfiguration.Web.ViewModels.ConfigurationViewModel
+@{
+    ViewData["Title"] = "Create Configuration";
+}
+<h1>Create Configuration</h1>
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control"/>
+    </div>
+    <div class="form-group">
+        <label asp-for="Type"></label>
+        <input asp-for="Type" class="form-control"/>
+    </div>
+    <div class="form-group">
+        <label asp-for="Value"></label>
+        <input asp-for="Value" class="form-control"/>
+    </div>
+    <div class="form-group form-check">
+        <input asp-for="IsActive" class="form-check-input"/>
+        <label asp-for="IsActive" class="form-check-label"></label>
+    </div>
+    <div class="form-group">
+        <label asp-for="ApplicationName"></label>
+        <input asp-for="ApplicationName" class="form-control"/>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

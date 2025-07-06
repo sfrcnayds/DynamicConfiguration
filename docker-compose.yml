@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:6.0
+    container_name: dynamicconfig_mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: ConfigurationDb
+    volumes:
+      - mongo_data:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: dynamicconfig_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  web:
+    build:
+      context: .
+      dockerfile: DynamicConfiguration.Web/Dockerfile
+    container_name: dynamicconfig_web
+    depends_on:
+      - mongo
+      - rabbitmq
+    ports:
+      - "5000:80"
+      - "5001:443"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__MongoConnection: mongodb://mongo:27017/ConfigurationDb
+      RabbitMq__HostName: rabbitmq
+      RabbitMq__User: guest
+      RabbitMq__Pass: guest
+
+  testservicea-api:
+    build:
+      context: .
+      dockerfile: DynamicConfiguration.TestServiceA-API/Dockerfile
+    container_name: dynamicconfig_testservicea_api
+    depends_on:
+      - mongo
+      - rabbitmq
+    ports:
+      - "5002:80"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__MongoConnection: mongodb://mongo:27017/ConfigurationDb
+      RabbitMq__HostName: rabbitmq
+      RabbitMq__User: guest
+      RabbitMq__Pass: guest
+
+  testserviceb-api:
+    build:
+      context: .
+      dockerfile: DynamicConfiguration.TestServiceB-API/Dockerfile
+    container_name: dynamicconfig_testserviceb_api
+    depends_on:
+      - mongo
+      - rabbitmq
+    ports:
+      - "5003:80"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__MongoConnection: mongodb://mongo:27017/ConfigurationDb
+      RabbitMq__HostName: rabbitmq
+      RabbitMq__User: guest
+      RabbitMq__Pass: guest
+
+volumes:
+  mongo_data:
+
+networks:
+  default:
+    driver: bridge
