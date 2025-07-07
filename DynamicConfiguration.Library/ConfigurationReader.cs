@@ -29,7 +29,8 @@ namespace DynamicConfiguration.Library
         
         public ConfigurationReader(string applicationName, string connectionString, int refreshIntervalMs)
         {
-            _store = new MongoConfigurationStore(connectionString);
+            var connections = connectionString.Split('|');
+            _store = new MongoConfigurationStore(connections[0]);
             _cache = new Dictionary<string, ConfigurationItem>();
             ApplicationName = applicationName;
 
@@ -41,11 +42,13 @@ namespace DynamicConfiguration.Library
                 null,
                 refreshIntervalMs,
                 refreshIntervalMs);
-            
-            (_rabbitConnection, _rabbitChannel) =
-                SetupRabbitMq("localhost", ExchangeName)
-                    .GetAwaiter()
-                    .GetResult();
+            if (connections.Length > 1)
+            {
+                (_rabbitConnection, _rabbitChannel) =
+                    SetupRabbitMq(connections[1], ExchangeName)
+                        .GetAwaiter()
+                        .GetResult();
+            }
         }
 
         
@@ -92,7 +95,7 @@ namespace DynamicConfiguration.Library
         private async Task<(IConnection,IChannel)> SetupRabbitMq(string rabbitConnString,string exchangeName)
         {
             var factory = new ConnectionFactory {
-                HostName = "localhost",
+                HostName = rabbitConnString,
                 UserName = "guest",
                 Password = "guest"
             };

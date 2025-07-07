@@ -39,10 +39,11 @@ namespace DynamicConfiguration.TestServiceB_API
             {
                 const string applicationName = "SERVICE-B";
                 const int refreshIntervalMs = 100000;
+                var connectionString = $"{Configuration.GetConnectionString("MongoConnection")}|{Configuration["RabbitMq:HostName"]}";
 
                 return new ConfigurationReader(
                     applicationName,
-                    Configuration.GetConnectionString("MongoConnection"),
+                    connectionString,
                     refreshIntervalMs
                 );
             });

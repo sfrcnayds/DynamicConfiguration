@@ -15,9 +15,9 @@ namespace DynamicConfiguration.TestServiceB_API.Controllers
         }
 
         [HttpGet("{configurationName:required}")]
-        public ActionResult<bool> Get(string configurationName)
+        public ActionResult<string> Get(string configurationName)
         {
-            return _configurationReader.GetValue<bool>(configurationName);
+            return _configurationReader.GetValue<string>(configurationName);
         }
     }
 }
